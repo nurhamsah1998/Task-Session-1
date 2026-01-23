@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/category", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/categories", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
 		switch r.Method {
@@ -15,6 +15,15 @@ func main() {
 			handler.GetCategories(w, r)
 		case http.MethodPost:
 			handler.CreateCategory(w, r)
+		default:
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		}
+	})
+
+	http.HandleFunc("/categories/", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+
+		switch r.Method {
 		case http.MethodPut:
 			handler.UpdateCategories(w, r)
 		case http.MethodDelete:

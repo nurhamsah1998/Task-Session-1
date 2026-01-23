@@ -4,15 +4,34 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"strings"
 	"task-session-1/models"
 	"task-session-1/storage"
 )
 
 func UpdateCategories(w http.ResponseWriter, r *http.Request) {
-	idStr := r.URL.Query().Get("id")
-	id, err := strconv.Atoi(idStr)
+	w.Header().Set("Content-Type", "application/json")
+
+	// contoh path: /categories/1
+	parts := strings.Split(r.URL.Path, "/")
+	// ["", "categories", "1"]
+
+	if len(parts) != 3 {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]any{
+			"success": false,
+			"message": "Invalid URL",
+		})
+		return
+	}
+
+	id, err := strconv.Atoi(parts[2])
 	if err != nil || id == 0 {
-		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]any{
+			"success": false,
+			"message": "Invalid ID",
+		})
 		return
 	}
 
