@@ -3,11 +3,15 @@ GET http://localhost:8080/categories HTTP/1.1
 Content-Type: application/json
 
 ###
+GET http://localhost:8080/categories/1 HTTP/1.1
+Content-Type: application/json
+
+###
 POST http://localhost:8080/categories HTTP/1.1
 Content-Type: application/json
 
 {
-    "description": "fruit",
+    "description": "NUR",
     "name": "Fashion"
 }
 ###

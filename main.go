@@ -28,6 +28,8 @@ func main() {
 			handler.UpdateCategories(w, r)
 		case http.MethodDelete:
 			handler.DeleteCategories(w, r)
+		case http.MethodGet:
+			handler.GetCategoriesById(w, r)
 		default:
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
