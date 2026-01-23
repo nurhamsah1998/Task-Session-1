@@ -9,6 +9,10 @@ import (
 
 func CreateCategory(w http.ResponseWriter, r *http.Request) {
 	var category models.Category
+	if len(storage.Categories) >= 5 {
+		http.Error(w, "Limit has reached!!, you cannot create again", http.StatusBadRequest)
+		return
+	}
 	if err := json.NewDecoder(r.Body).Decode(&category); err != nil {
 		http.Error(w, "Invalid body", http.StatusBadRequest)
 		return
