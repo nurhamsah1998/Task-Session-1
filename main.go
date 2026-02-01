@@ -1,20 +1,53 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
-	"task-session-1/handler"
+	"os"
+	"strings"
+	"task-session-1/database"
+	"task-session-1/handlers"
+	"task-session-1/repositories"
+	"task-session-1/services"
+
+	"github.com/spf13/viper"
 )
 
+type Config struct {
+	Port         string `mapstructure:"PORT"`
+	DBConnection string `mapstructure:"DB_CONNECTION"`
+}
+
 func main() {
+	viper.AutomaticEnv()
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+
+	if _, err := os.Stat(".env"); err == nil {
+		viper.SetConfigFile(".env")
+		_ = viper.ReadInConfig()
+	}
+	config := Config{
+		Port:         viper.GetString("PORT"),
+		DBConnection: viper.GetString("DB_CONNECTION"),
+	}
+	// Setup database
+	db, err := database.InitDB(config.DBConnection)
+	if err != nil {
+		log.Fatal("Failed to initialize database:", err)
+	}
+	defer db.Close()
+	categoryRepo := repositories.NewProductRepository(db)
+	categoryService := services.NewCategoryService(categoryRepo)
+	categoryHandler := handlers.NerCategoryHandler(categoryService)
+
 	http.HandleFunc("/categories", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-
 		switch r.Method {
 		case http.MethodGet:
-			handler.GetCategories(w, r)
+			categoryHandler.GetAll(w, r)
 		case http.MethodPost:
-			handler.CreateCategory(w, r)
+			categoryHandler.Create(w, r)
 		default:
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
@@ -25,16 +58,24 @@ func main() {
 
 		switch r.Method {
 		case http.MethodPut:
-			handler.UpdateCategories(w, r)
+			categoryHandler.Update(w, r)
 		case http.MethodDelete:
-			handler.DeleteCategories(w, r)
+			categoryHandler.Delete(w, r)
 		case http.MethodGet:
-			handler.GetCategoriesById(w, r)
+			categoryHandler.GetByID(w, r)
 		default:
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
 	})
 
-	log.Println("🚀 Server running on http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	addr := "0.0.0.0:" + config.Port
+	fmt.Println("Server running di", addr)
+
+	err = http.ListenAndServe(addr, nil)
+	if err != nil {
+		log.Fatal()
+	} else {
+		log.Println("🚀 Server running on http://localhost:8080")
+	}
+
 }
