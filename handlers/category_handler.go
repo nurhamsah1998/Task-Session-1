@@ -56,7 +56,11 @@ func (h *CategoryHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	}
 	category, err := h.service.GetByID(id)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(map[string]any{
+			"success": false,
+			"message": err.Error(),
+		})
 		return
 	}
 
@@ -73,6 +77,17 @@ func (h *CategoryHandler) Create(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid body", http.StatusBadRequest)
 		return
 	}
+	categories, _ := h.service.GetAll()
+	categoryCount := len(categories)
+	if categoryCount >= 10 {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]any{
+			"success": false,
+			"message": "Uppss!! youhave been reached 10 item, please delete some item or modified!",
+		})
+		return
+	}
+
 	if err := h.service.Create(&category); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -149,7 +164,11 @@ func (h *CategoryHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := h.service.Delete(id); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(map[string]any{
+			"success": false,
+			"message": err.Error(),
+		})
 		return
 	}
 	w.WriteHeader(http.StatusOK)

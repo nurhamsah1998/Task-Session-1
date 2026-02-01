@@ -19,6 +19,7 @@ type categoryService struct {
 
 // Create implements CategoryService.
 func (c *categoryService) Create(product *models.Category) error {
+
 	return c.repo.Create(product)
 }
 
@@ -29,6 +30,7 @@ func (c *categoryService) Delete(id int) error {
 
 // GetAll implements CategoryService.
 func (c *categoryService) GetAll() ([]models.Category, error) {
+
 	return c.repo.GetAll()
 }
 
