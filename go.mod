@@ -2,10 +2,7 @@ module task-session-1
 
 go 1.25.5
 
-require (
-	github.com/lib/pq v1.11.1
-	github.com/spf13/viper v1.21.0
-)
+require github.com/spf13/viper v1.21.0
 
 require (
 	github.com/jackc/pgpassfile v1.0.0 // indirect

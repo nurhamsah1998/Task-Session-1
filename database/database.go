@@ -2,19 +2,23 @@ package database
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 
-	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/stdlib"
 )
 
 func InitDB(connectionString string) (*sql.DB, error) {
-	// Open database
-	fmt.Println(connectionString, "<==========")
-	db, err := sql.Open("pgx", connectionString)
+	cfg, err := pgx.ParseConfig(connectionString)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
+
+	// ✅ Supabase / PgBouncer SAFE
+	cfg.StatementCacheCapacity = 0
+	cfg.DefaultQueryExecMode = pgx.QueryExecModeSimpleProtocol
+
+	db := stdlib.OpenDB(*cfg)
 
 	// Test connection
 	err = db.Ping()
