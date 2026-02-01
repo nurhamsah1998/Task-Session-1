@@ -19,27 +19,27 @@ type categoryService struct {
 
 // Create implements CategoryService.
 func (c *categoryService) Create(product *models.Category) error {
-	return c.Create(product)
+	return c.repo.Create(product)
 }
 
 // Delete implements CategoryService.
 func (c *categoryService) Delete(id int) error {
-	return c.Delete(id)
+	return c.repo.Delete(id)
 }
 
 // GetAll implements CategoryService.
 func (c *categoryService) GetAll() ([]models.Category, error) {
-	return c.GetAll()
+	return c.repo.GetAll()
 }
 
 // GetByID implements CategoryService.
 func (c *categoryService) GetByID(id int) (*models.Category, error) {
-	return c.GetByID(id)
+	return c.repo.GetByID(id)
 }
 
 // Update implements CategoryService.
 func (c *categoryService) Update(product *models.Category) error {
-	return c.Update(product)
+	return c.repo.Update(product)
 }
 
 func NewCategoryService(repo repositories.CategoryRepository) CategoryService {

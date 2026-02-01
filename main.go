@@ -31,13 +31,14 @@ func main() {
 		Port:         viper.GetString("PORT"),
 		DBConnection: viper.GetString("DB_CONNECTION"),
 	}
+
 	// Setup database
 	db, err := database.InitDB(config.DBConnection)
 	if err != nil {
 		log.Fatal("Failed to initialize database:", err)
 	}
 	defer db.Close()
-	categoryRepo := repositories.NewProductRepository(db)
+	categoryRepo := repositories.NewCategoryRepository(db)
 	categoryService := services.NewCategoryService(categoryRepo)
 	categoryHandler := handlers.NerCategoryHandler(categoryService)
 

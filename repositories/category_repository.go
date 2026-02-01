@@ -21,7 +21,7 @@ type categoryRepository struct {
 // Create implements CategoryRepository.
 func (r *categoryRepository) Create(category *models.Category) error {
 	query := `
-		INSERT INTO products (name, description)
+		INSERT INTO categories (name, description)
 		VALUES ($1, $2)
 		RETURNING id
 	`
@@ -120,6 +120,6 @@ func (r *categoryRepository) Update(category *models.Category) error {
 	return nil
 }
 
-func NewProductRepository(db *sql.DB) CategoryRepository {
+func NewCategoryRepository(db *sql.DB) CategoryRepository {
 	return &categoryRepository{db: db}
 }
